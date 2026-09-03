@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>¿Soy candidato/a a GLP-1? – Dr. Cristian Ortiz</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -174,6 +175,22 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);min-height:100vh;displ
 .wa-cta svg{width:24px;height:24px;fill:#fff;flex-shrink:0}
 .restart-btn{display:block;text-align:center;color:var(--muted);font-size:12px;cursor:pointer;background:none;border:none;font-family:'Outfit',sans-serif;text-decoration:underline;width:100%;padding:8px}
 .footer-note{text-align:center;font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5}
+
+
+/* ══════════════════════════════
+   REGISTRO / LEAD
+══════════════════════════════ */
+.contact-screen{flex:1;display:flex;flex-direction:column;padding:28px 20px 48px;max-width:500px;width:100%;margin:0 auto}
+.contact-card{background:var(--white);border-radius:20px;border:1px solid var(--border);padding:24px;box-shadow:0 4px 20px rgba(27,47,138,0.08);margin-bottom:16px}
+.contact-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;color:var(--text);outline:none;transition:border-color 0.2s,background 0.2s;background:var(--bg);margin-bottom:12px}
+.contact-input:focus{border-color:var(--teal);background:var(--white)}
+.contact-btn{width:100%;padding:15px;background:var(--navy);color:#fff;border:none;border-radius:13px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:opacity 0.2s;box-shadow:0 4px 16px rgba(27,47,138,0.25)}
+.contact-btn:hover{opacity:0.88}.contact-btn:disabled{opacity:.55;cursor:not-allowed}
+.consent-row{display:flex;gap:10px;align-items:flex-start;margin:12px 0;font-size:12px;line-height:1.5;color:var(--text)}
+.consent-row input{margin-top:3px;accent-color:var(--navy);flex-shrink:0}
+.contact-privacy{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5}
+.form-msg{font-size:12px;line-height:1.45;margin-top:10px;min-height:18px;color:var(--red)}
+
 </style>
 </head>
 <body>
@@ -196,7 +213,38 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);min-height:100vh;displ
       <span class="w-pill">🔒 100% privado</span>
       <span class="w-pill">📋 Basado en evidencia 2024–2025</span>
     </div>
-    <button class="start-btn" onclick="goIMC()">Comenzar evaluación →</button>
+    <button class="start-btn" onclick="goRegister()">Comenzar evaluación →</button>
+  </div>
+</div>
+
+<!-- ══ REGISTRO ══ -->
+<div class="screen" id="s-contact">
+  <div class="contact-screen">
+    <div class="screen-title">Antes de comenzar</div>
+    <div class="screen-sub">Completa tus datos para iniciar tu evaluación y recibir tu resultado personalizado al finalizar.</div>
+    <div class="contact-card">
+      <label class="field-label" for="inp-nombre">Nombre y apellido</label>
+      <input class="contact-input" type="text" id="inp-nombre" placeholder="Tu nombre" autocomplete="name" required>
+
+      <label class="field-label" for="inp-telefono">WhatsApp</label>
+      <input class="contact-input" type="tel" id="inp-telefono" placeholder="81 2345 6789" autocomplete="tel" inputmode="tel" required>
+
+      <label class="field-label" for="inp-email">Correo electrónico</label>
+      <input class="contact-input" type="email" id="inp-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email" required>
+
+      <label class="consent-row">
+        <input type="checkbox" id="consent-datos">
+        <span>Acepto el tratamiento de mis datos para realizar esta evaluación y permitir que el consultorio me contacte en relación con mi resultado. He leído el Aviso de Privacidad.</span>
+      </label>
+      <label class="consent-row">
+        <input type="checkbox" id="consent-marketing">
+        <span>Quiero recibir de forma opcional información educativa, novedades y comunicaciones del consultorio por correo electrónico o WhatsApp. Puedo retirar mi consentimiento posteriormente.</span>
+      </label>
+
+      <button class="contact-btn" id="contact-submit" onclick="submitRegistration()">Iniciar mi evaluación →</button>
+      <div class="form-msg" id="contact-msg"></div>
+    </div>
+    <p class="contact-privacy">🔒 Tus datos se usarán conforme al Aviso de Privacidad del consultorio. La autorización de marketing es opcional.</p>
   </div>
 </div>
 
@@ -296,7 +344,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);min-height:100vh;displ
 
     <div class="disclaimer">⚠️ Esta herramienta es orientativa. La prescripción de GLP-1 requiere evaluación médica completa. Solo el Dr. Ortiz puede confirmar si eres candidato/a.</div>
 
-    <a id="r-wa" class="wa-cta" href="#" target="_blank">
+    <a id="r-wa" class="wa-cta" href="#" target="_blank" onclick="trackWhatsAppClick()">
       <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.123 1.531 5.858L.057 23.743a.75.75 0 0 0 .921.921l5.9-1.475A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.745 9.745 0 0 1-5.038-1.395l-.36-.214-3.735.933.963-3.715-.234-.374A9.72 9.72 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
       <span id="r-wa-txt">Hablar con el Dr. Ortiz</span>
     </a>
@@ -306,6 +354,112 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);min-height:100vh;displ
 </div>
 
 <script>
+// ─── SUPABASE / FUNNEL ───
+const SUPABASE_URL = 'https://avoqzajbziooarldoewa.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2b3F6YWpiemlvb2FybGRvZXdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODQwNTAsImV4cCI6MjA5NTM2MDA1MH0.YfukSL2KUgvTl-UG1mYXVbX2Usp6y8qFZcvv3KP5I1A';
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let leadId = null;
+let leadToken = null;
+const urlParams = new URLSearchParams(window.location.search);
+const funnelUtm = {
+  utm_source: urlParams.get('utm_source'),
+  utm_medium: urlParams.get('utm_medium'),
+  utm_campaign: urlParams.get('utm_campaign'),
+  utm_content: urlParams.get('utm_content')
+};
+
+function goRegister(){ show('s-contact'); setStep('Registro',3); }
+
+function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+async function submitRegistration(){
+  const nombre=document.getElementById('inp-nombre').value.trim();
+  const telefono=document.getElementById('inp-telefono').value.trim();
+  const email=document.getElementById('inp-email').value.trim();
+  const consentimientoDatos=document.getElementById('consent-datos').checked;
+  const consentimientoMarketing=document.getElementById('consent-marketing').checked;
+  const msg=document.getElementById('contact-msg');
+  const btn=document.getElementById('contact-submit');
+  msg.textContent='';
+  ['inp-nombre','inp-telefono','inp-email'].forEach(id=>document.getElementById(id).style.borderColor='var(--border)');
+
+  if(!nombre || !telefono || !email){
+    msg.textContent='Completa nombre, WhatsApp y correo electrónico para continuar.';
+    if(!nombre)document.getElementById('inp-nombre').style.borderColor='var(--red)';
+    if(!telefono)document.getElementById('inp-telefono').style.borderColor='var(--red)';
+    if(!email)document.getElementById('inp-email').style.borderColor='var(--red)';
+    return;
+  }
+  if(!validEmail(email)){
+    document.getElementById('inp-email').style.borderColor='var(--red)';
+    msg.textContent='Revisa que el correo electrónico sea válido.';
+    return;
+  }
+  if(!consentimientoDatos){
+    msg.textContent='Necesitamos tu consentimiento para procesar los datos de esta evaluación.';
+    return;
+  }
+
+  btn.disabled=true; btn.textContent='Guardando…';
+  try{
+    leadId = (crypto && crypto.randomUUID) ? crypto.randomUUID() : null;
+    leadToken = (crypto && crypto.randomUUID) ? crypto.randomUUID() : null;
+    if(!leadId || !leadToken) throw new Error('El navegador no pudo generar identificadores seguros.');
+    const payload={
+      id:leadId,
+      update_token:leadToken,
+      nombre, telefono, email,
+      estado:'registrado',
+      consentimiento_datos:true,
+      consentimiento_marketing:consentimientoMarketing,
+      ...funnelUtm,
+      quiz_iniciado:false, quiz_completado:false, whatsapp_click:false,
+      created_at:new Date().toISOString()
+    };
+    const {error}=await _sb.from('leads_glp1').insert([payload]);
+    if(error) throw error;
+    goIMC();
+  }catch(e){
+    console.error('Error al registrar lead:',e);
+    msg.textContent='No pudimos guardar tus datos. Intenta nuevamente en unos segundos.';
+  }finally{
+    btn.disabled=false; btn.textContent='Iniciar mi evaluación →';
+  }
+}
+
+async function updateLead(patch){
+  if(!leadId || !leadToken) return;
+  try{
+    const rpcPayload = {
+      p_id: leadId,
+      p_token: leadToken,
+      p_estado: patch.estado ?? null,
+      p_quiz_iniciado: patch.quiz_iniciado ?? null,
+      p_quiz_completado: patch.quiz_completado ?? null,
+      p_whatsapp_click: patch.whatsapp_click ?? null,
+      p_resultado: patch.resultado ?? null,
+      p_score_total: patch.score_total ?? null,
+      p_imc: patch.imc ?? null,
+      p_imc_categoria: patch.imc_categoria ?? null,
+      p_peso_kg: patch.peso_kg ?? null,
+      p_factores_clave: patch.factores_clave ?? null,
+      p_completed_at: patch.completed_at ?? null
+    };
+    const {error}=await _sb.rpc('actualizar_lead_glp1', rpcPayload);
+    if(error) console.error('Error actualizando lead:', error);
+  }catch(e){
+    console.error('Error actualizando lead:', e);
+  }
+}
+
+function markQuizStarted(){
+  updateLead({estado:'quiz_iniciado',quiz_iniciado:true});
+}
+
+function trackWhatsAppClick(){
+  updateLead({estado:'whatsapp',whatsapp_click:true});
+}
+
 // ─── IMC STATE ───
 let imcVal=null, imcKey=null, imcColor='#4DBFB8', imcCatLabel='', pesoKg=null;
 
@@ -362,8 +516,8 @@ function renderMeta(peso,imc,s){
 }
 
 function goIMC(){ show('s-imc'); setStep('Calculadora IMC',5); }
-function goQuiz(){ curr=0; show('s-question'); renderQ(); }
-function skipIMC(){ imcVal=null; imcKey=null; pesoKg=null; curr=0; show('s-question'); renderQ(); }
+function goQuiz(){ curr=0; markQuizStarted(); show('s-question'); renderQ(); }
+function skipIMC(){ imcVal=null; imcKey=null; pesoKg=null; curr=0; markQuizStarted(); show('s-question'); renderQ(); }
 
 // ─── QUESTIONS ───
 const QS = [
@@ -645,14 +799,32 @@ function showResult(){
 
   document.getElementById('r-wa-txt').textContent=waTxt;
   document.getElementById('r-wa').href=`https://wa.me/528120318198?text=${encodeURIComponent(waMsg)}`;
+
+  const resultadoSlug = hardC ? 'evaluacion_especializada' : imcBajo ? 'evaluacion_personalizada' : (total>=13&&!noC) ? 'muy_probablemente_candidato' : total>=6 ? 'posiblemente_candidato' : 'evaluacion_requerida';
+  updateLead({
+    estado:'quiz_completado',
+    quiz_completado:true,
+    resultado:resultadoSlug,
+    score_total:total,
+    imc:imcVal || null,
+    imc_categoria:imcKey || null,
+    peso_kg:pesoKg || null,
+    factores_clave:allK.join(','),
+    completed_at:new Date().toISOString()
+  });
   show('s-result');
 }
 
 function restart(){
+  leadId=null;
+  leadToken=null;
   answers=Array(QS.length).fill(null); imcVal=null; imcKey=null; pesoKg=null; imcCatLabel='';
   document.getElementById('inp-peso').value='';
   document.getElementById('inp-talla').value='';
   document.getElementById('imc-result').classList.remove('show');
+  ['inp-nombre','inp-telefono','inp-email'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  if(document.getElementById('consent-datos'))document.getElementById('consent-datos').checked=false;
+  if(document.getElementById('consent-marketing'))document.getElementById('consent-marketing').checked=false;
   show('s-welcome'); setStep('Inicio',0);
 }
 </script>
